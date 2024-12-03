@@ -1,13 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLoaderData } from 'react-router-dom';
 import Coffee from './Coffee';
 
 const Home = () => {
 
     const coffees = useLoaderData();
+    console.log(coffees);
 
-    // better use tanstack query or similar packages
-    const [loadedCoffees, setLoadedCoffees] = useState(coffees);
+    // Check if coffees is an array before using map
+    const [loadedCoffees, setLoadedCoffees] = useState([]);
+
+    useEffect(() => {
+        if (Array.isArray(coffees)) {
+            setLoadedCoffees(coffees);
+        }
+    }, [coffees]);
 
     return (
         <div>
@@ -15,12 +22,18 @@ const Home = () => {
 
             <div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
                 {
-                    loadedCoffees.map(coffee => <Coffee
-                        coffee={coffee}
-                        loadedCoffees={loadedCoffees}
-                        setLoadedCoffees={setLoadedCoffees}
-                        key={coffee._id}
-                    ></Coffee>)
+                    loadedCoffees && loadedCoffees.length > 0 ? (
+                        loadedCoffees.map(coffee => (
+                            <Coffee
+                                key={coffee._id}
+                                coffee={coffee}
+                                loadedCoffees={loadedCoffees}
+                                setLoadedCoffees={setLoadedCoffees}
+                            />
+                        ))
+                    ) : (
+                        <p>No coffees available</p>
+                    )
                 }
             </div>
         </div>
